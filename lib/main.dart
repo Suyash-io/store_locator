@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       getPages: pages,
-      initialRoute: AppRoutes.homeScreen,
+      initialRoute: AppRoutes.homeScreen2,
     );
   }
 }

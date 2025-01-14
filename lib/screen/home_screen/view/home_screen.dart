@@ -10,6 +10,7 @@ class HomeScreen extends GetView<HomeScreenController> {
 
   @override
   Widget build(BuildContext context) {
+    double height = Get.height;
     return Scaffold(
       appBar: AppBar(
         title: Text('Stores'),
@@ -22,57 +23,61 @@ class HomeScreen extends GetView<HomeScreenController> {
                   color: Colors.black,
                 ),
               )
-            : Column(
-                children: [
-                  Expanded(
-                    child: Card(
-                      clipBehavior: Clip.hardEdge,
-                      child: FlutterMap(
-                        mapController: controller.mapController,
-                        options: MapOptions(
-                          initialCenter: LatLng(16.69, 74.23),
-                          initialZoom: 13,
-                          cameraConstraint: CameraConstraint.contain(
-                            bounds: LatLngBounds(
-                              const LatLng(-90, -180),
-                              const LatLng(90, 180),
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: height * 0.45,
+                      child: Card(
+                        clipBehavior: Clip.hardEdge,
+                        child: FlutterMap(
+                          mapController: controller.mapController,
+                          options: MapOptions(
+                            initialCenter: LatLng(16.69, 74.23),
+                            initialZoom: 13,
+                            cameraConstraint: CameraConstraint.contain(
+                              bounds: LatLngBounds(
+                                const LatLng(-90, -180),
+                                const LatLng(90, 180),
+                              ),
                             ),
                           ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.example.app',
+                            ),
+                            Obx(() {
+                              StoreDetailModel? selectedStore =
+                                  controller.selectedStore.value;
+                              return MarkerLayer(
+                                  markers: controller.storeList.map((marker) {
+                                bool isSelected = selectedStore != null &&
+                                    selectedStore.code == marker.code;
+                                return Marker(
+                                    height: 50,
+                                    width: 50,
+                                    point: LatLng(
+                                        marker.latitude, marker.longitude),
+                                    child: Icon(
+                                      Icons.location_on_outlined,
+                                      color: isSelected
+                                          ? Colors.pink
+                                          : Colors.blue,
+                                    ));
+                              }).toList());
+                            })
+                          ],
                         ),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.example.app',
-                          ),
-                          Obx(() {
-                            StoreDetailModel? selectedStore = controller.selectedStore.value;
-                            return MarkerLayer(
-                                markers: controller.storeList
-                                    .map((marker) {
-                                  bool isSelected = selectedStore != null && selectedStore.code == marker.code;
-                                      return Marker(
-                                        height:50,
-                                        width: 50,
-                                        point: LatLng(
-                                            marker.latitude, marker.longitude),
-                                        child: Icon(
-                                          Icons.location_on_outlined,
-                                          color: isSelected ? Colors.pink : Colors.blue,
-                                        ));})
-                                    .toList());
-                          })
-                        ],
                       ),
                     ),
-                  ),
-                  Obx(() {
-                    StoreDetailModel? selectedStore =
-                        controller.selectedStore.value;
-
-                    return Expanded(
-                      child: ListView.builder(
+                    Obx(() {
+                      StoreDetailModel? selectedStore =
+                          controller.selectedStore.value;
+                      return ListView.builder(
                         shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: controller.storeList.length,
                         itemBuilder: (BuildContext context, int index) {
                           final store = controller.storeList[index];
@@ -87,10 +92,10 @@ class HomeScreen extends GetView<HomeScreenController> {
                             },
                           );
                         },
-                      ),
-                    );
-                  })
-                ],
+                      );
+                    })
+                  ],
+                ),
               ),
       ),
     );
