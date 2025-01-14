@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+
 StoreDetailResponseModel storeDetailResponseModelFromJson(String str) => StoreDetailResponseModel.fromJson(json.decode(str));
 
 String storeDetailResponseModelToJson(StoreDetailResponseModel data) => json.encode(data.toJson());
@@ -28,7 +30,7 @@ class StoreDetailResponseModel {
   };
 }
 
-class StoreDetailModel {
+class StoreDetailModel extends ChangeNotifier {
   String code;
   String storeLocation;
   double latitude;
